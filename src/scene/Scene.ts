@@ -1,3 +1,4 @@
+import { Animation } from "@animations/Animation";
 import { select } from "d3-selection";
 //+++++++++++++++++++++++++++++++++++++++++++++++++++//
 
@@ -39,9 +40,7 @@ export class Scene {
     CONFIG: SCENE_CONFIG;
 
     /**
-     * The time passed by since this scene was created (in milliseconds), or
-     * the sum of the `groupElapsed` property of all groups included in this
-     * scene.
+     * The time passed by since this scene was created (in milliseconds).
      */
     sceneElapsed = 0;
 
@@ -58,6 +57,23 @@ export class Scene {
             sceneHeight:
                 CONFIG?.sceneHeight ?? SCENE_DEFAULT_CONFIG.sceneHeight,
         };
+    }
+
+    /**
+     * Play all the animations included in a queue.
+     *
+     * @param animations Array (Queue) of animations to play.
+     */
+    play(animations: Animation[]) {
+        const queueElapsed = Math.max(
+            ...animations.map((animation) => {
+                animation.play();
+
+                return animation.duration;
+            })
+        );
+
+        this.sceneElapsed += queueElapsed;
     }
 
     /**

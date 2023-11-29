@@ -91,13 +91,6 @@ export class Group {
     yWtoG: ScaleLinear<number, number, never>;
 
     /**
-     * The time passed by since this group was created. (in milliseconds)
-     *
-     * > (aka the total time of all the animations **called** in this group)
-     */
-    groupElapsed = 0;
-
-    /**
      * Include this group to HTML flow.
      *
      * @param groupName Name of the group.
@@ -132,8 +125,6 @@ export class Group {
         this.defineBoundsAndSquares(this.ratio);
 
         this.defineCovertFunctions(this.ratio);
-
-        this.groupElapsed = scene.sceneElapsed;
     }
 
     /**
@@ -221,33 +212,12 @@ export class Group {
     }
 
     /**
-     * Play all the animations included in a queue.
-     *
-     * @param animations Array (Queue) of animations to play.
-     */
-    play(animations: Animation[]) {
-        const queueElapsed = Math.max(
-            ...animations.map((animation) => {
-                animation.play();
-
-                return animation.duration;
-            })
-        );
-
-        this.groupElapsed += queueElapsed;
-
-        this.scene.sceneElapsed = this.groupElapsed;
-    }
-
-    /**
      * Sleep this group for an amount of time.
      *
      * @param milliseconds The time to sleep.
      */
     sleep(milliseconds: number) {
-        this.groupElapsed += milliseconds;
-
-        this.scene.sceneElapsed = this.groupElapsed;
+        this.scene.sceneElapsed += milliseconds;
     }
 
     /**
@@ -259,7 +229,7 @@ export class Group {
         cubicons.forEach((cubicon) => {
             cubicon.g_cubiconWrapper
                 .transition()
-                .delay(this.groupElapsed)
+                .delay(this.scene.sceneElapsed)
                 .duration(0)
                 .remove();
         });
@@ -274,7 +244,7 @@ export class Group {
     destroy(delay = 0) {
         this.svg_group
             .transition()
-            .delay(this.groupElapsed + delay)
+            .delay(this.scene.sceneElapsed + delay)
             .duration(500)
             .style("opacity", 0)
             .remove();
@@ -300,7 +270,7 @@ export class Group {
 
         this.svg_group
             .transition()
-            .delay(this.groupElapsed)
+            .delay(this.scene.sceneElapsed)
             .duration(duration)
             .style("opacity", CONFIG.opacity);
     }
