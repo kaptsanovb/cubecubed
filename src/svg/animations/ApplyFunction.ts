@@ -32,29 +32,29 @@ export class ApplyFunction extends Animation {
         this.func = params.func;
     }
 
-    play() {
-        this.applyFunction();
+    play(baseDelay: number) {
+        this.applyFunction(baseDelay);
     }
 
-    private applyFunction() {
+    private applyFunction(baseDelay: number) {
         if (this.cubicon.cubiconType === "Line") {
-            this.applyFunctionToLine(this.cubicon);
+            this.applyFunctionToLine(this.cubicon, baseDelay);
         }
 
         if (this.cubicon.cubiconType === "Grid") {
             [
                 ...this.cubicon.horizontalLines,
                 ...this.cubicon.verticalLines,
-            ].forEach((line) => this.applyFunctionToLine(line));
+            ].forEach((line) => this.applyFunctionToLine(line, baseDelay));
         }
     }
 
-    private applyFunctionToLine(line: Line) {
+    private applyFunctionToLine(line: Line, baseDelay: number) {
         line.vertices = line.vertices.map((vertex) => this.func(vertex));
 
         line.def_cubiconBase
             .transition()
-            .delay(line.group.groupElapsed)
+            .delay(baseDelay + this.delay)
             .duration(this.duration)
             .attr("d", line.getData());
     }

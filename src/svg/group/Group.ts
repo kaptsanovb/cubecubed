@@ -91,11 +91,9 @@ export class Group {
     yWtoG: ScaleLinear<number, number, never>;
 
     /**
-     * The time passed by since this group was created. (in milliseconds)
-     *
-     * > (aka the total time of all the animations **called** in this group)
+     * The time given by Date.now() when .sleep() ends.
      */
-    groupElapsed = 0;
+    sleepEndTime: number;
 
     /**
      * Include this group to HTML flow.
@@ -132,8 +130,8 @@ export class Group {
         this.defineBoundsAndSquares(this.ratio);
 
         this.defineCovertFunctions(this.ratio);
-
-        this.groupElapsed = scene.sceneElapsed;
+        
+        this.sleepEndTime = Date.now();
     }
 
     /**
@@ -225,18 +223,12 @@ export class Group {
      *
      * @param animations Array (Queue) of animations to play.
      */
-    play(animations: Animation[]) {
-        const queueElapsed = Math.max(
-            ...animations.map((animation) => {
-                animation.play();
-
-                return animation.duration;
-            })
-        );
-
-        this.groupElapsed += queueElapsed;
-
-        this.scene.sceneElapsed = this.groupElapsed;
+    play(animationsSets: [...Animation[]][]) {
+        let baseDelay = Math.max(0, this.sleepEndTime - Date.now());
+        animationsSets.forEach(set => {
+            set.forEach(animation => animation.play(baseDelay))
+            baseDelay = Math.max(...set.map(i => baseDelay + i.delay + i.duration))
+        })
     }
 
     /**
@@ -245,9 +237,7 @@ export class Group {
      * @param milliseconds The time to sleep.
      */
     sleep(milliseconds: number) {
-        this.groupElapsed += milliseconds;
-
-        this.scene.sceneElapsed = this.groupElapsed;
+        this.sleepEndTime = Date.now() + milliseconds;
     }
 
     /**

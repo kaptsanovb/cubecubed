@@ -14,6 +14,11 @@ export interface AnimationParams<TCubicon> {
     duration?: number;
 
     /**
+     * The delay from when the animation is **supposed to be played**.
+     */
+    delay?: number;
+
+    /**
      * Easing function for smooth animation.
      */
     ease?: EASE_TYPE;
@@ -22,23 +27,20 @@ export interface AnimationParams<TCubicon> {
 export abstract class Animation {
     abstract readonly animationType: string;
 
-    /**
-     * The time to wait before playing this animation.
-     */
-    sleepTime = 0;
-
     cubicon: Cubicon;
 
     duration: number;
+
+    delay: number;
 
     ease: EASE_TYPE;
 
     constructor(params: AnimationParams<Cubicon>) {
         this.cubicon = params.cubicon;
 
-        this.sleepTime = params.cubicon.group.groupElapsed;
-
         this.duration = params.duration ?? 0;
+
+        this.delay = params.delay ?? 0;
 
         this.ease = params.ease ?? EASE.CUBIC;
     }
@@ -46,7 +48,7 @@ export abstract class Animation {
     /**
      * Play this animation.
      */
-    play() {
+    play(baseDelay: number) {
         //
     }
 
