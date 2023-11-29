@@ -24,7 +24,7 @@ export class DrawVectorField extends Animation {
     play() {
         this.drawVectorField();
 
-        this.cubicon.group.groupElapsed -= this.duration;
+        this.cubicon.group.scene.sceneElapsed -= this.duration;
     }
 
     private drawVectorField() {
@@ -34,7 +34,7 @@ export class DrawVectorField extends Animation {
     private applyVectorShapeCreation() {
         const animations = this.getAnimations();
 
-        this.cubicon.group.play(animations);
+        this.cubicon.group.scene.play(animations);
     }
 
     private getAnimations() {

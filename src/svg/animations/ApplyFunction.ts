@@ -54,7 +54,7 @@ export class ApplyFunction extends Animation {
 
         line.def_cubiconBase
             .transition()
-            .delay(baseDelay + this.delay)
+            .delay(line.group.scene.sceneElapsed)
             .duration(this.duration)
             .attr("d", line.getData());
     }

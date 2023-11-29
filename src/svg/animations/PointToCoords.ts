@@ -42,7 +42,7 @@ export class PointToCoords extends Animation {
     private pointToCoords() {
         const animations = this.getAnimations();
 
-        this.cubicon.group.play(animations);
+        this.cubicon.group.scene.play(animations);
 
         this.reverseToLastGroupElapsed();
     }
@@ -50,7 +50,7 @@ export class PointToCoords extends Animation {
     private reverseToLastGroupElapsed() {
         const animations = this.getAnimations();
 
-        this.cubicon.group.groupElapsed -= Math.max(
+        this.cubicon.group.scene.sceneElapsed -= Math.max(
             ...animations.map((animation) => animation.duration)
         );
     }

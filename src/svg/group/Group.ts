@@ -91,11 +91,6 @@ export class Group {
     yWtoG: ScaleLinear<number, number, never>;
 
     /**
-     * The time given by Date.now() when .sleep() ends.
-     */
-    sleepEndTime: number;
-
-    /**
      * Include this group to HTML flow.
      *
      * @param groupName Name of the group.
@@ -130,8 +125,6 @@ export class Group {
         this.defineBoundsAndSquares(this.ratio);
 
         this.defineCovertFunctions(this.ratio);
-        
-        this.sleepEndTime = Date.now();
     }
 
     /**
@@ -219,25 +212,12 @@ export class Group {
     }
 
     /**
-     * Play all the animations included in a queue.
-     *
-     * @param animations Array (Queue) of animations to play.
-     */
-    play(animationsSets: [...Animation[]][]) {
-        let baseDelay = Math.max(0, this.sleepEndTime - Date.now());
-        animationsSets.forEach(set => {
-            set.forEach(animation => animation.play(baseDelay))
-            baseDelay = Math.max(...set.map(i => baseDelay + i.delay + i.duration))
-        })
-    }
-
-    /**
      * Sleep this group for an amount of time.
      *
      * @param milliseconds The time to sleep.
      */
     sleep(milliseconds: number) {
-        this.sleepEndTime = Date.now() + milliseconds;
+        this.scene.sceneElapsed += milliseconds;
     }
 
     /**
@@ -249,7 +229,7 @@ export class Group {
         cubicons.forEach((cubicon) => {
             cubicon.g_cubiconWrapper
                 .transition()
-                .delay(this.groupElapsed)
+                .delay(this.scene.sceneElapsed)
                 .duration(0)
                 .remove();
         });
@@ -264,7 +244,7 @@ export class Group {
     destroy(delay = 0) {
         this.svg_group
             .transition()
-            .delay(this.groupElapsed + delay)
+            .delay(this.scene.sceneElapsed + delay)
             .duration(500)
             .style("opacity", 0)
             .remove();
@@ -290,7 +270,7 @@ export class Group {
 
         this.svg_group
             .transition()
-            .delay(this.groupElapsed)
+            .delay(this.scene.sceneElapsed)
             .duration(duration)
             .style("opacity", CONFIG.opacity);
     }
